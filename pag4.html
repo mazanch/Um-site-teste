@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu App Mobile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #cfed58, #ff3fef);
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      transition: background 0.5s ease;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 1.1em;
+    }
+
+    button, select, input[type="color"] {
+      background-color: #ffffff;
+      color: #333;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 25px;
+      font-size: 1em;
+      cursor: pointer;
+      margin: 8px;
+      transition: 0.3s;
+    }
+
+    button:hover, select:hover, input[type="color"]:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.05);
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      font-size: 0.8em;
+      color: #eee;
+    }
+
+    .tela {
+      display: none;
+    }
+
+    .ativa {
+      display: block;
+    }
+
+    textarea {
+      width: 80%;
+      height: 100px;
+      border-radius: 10px;
+      border: none;
+      padding: 10px;
+      font-size: 1em;
+      margin-bottom: 15px;
+    }
+
+    #saida {
+      font-size: 1em;
+      margin-top: 10px;
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 10px;
+      border-radius: 10px;
+      width: 80%;
+      margin: auto;
+    }
+
+    audio {
+      margin-top: 15px;
+      width: 80%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Tela inicial -->
+  <div id="telaInicial" class="tela ativa">
+    <h1>Bem-vindo ao Meu App!</h1>
+    <p>Seu aplicativo começa aqui 🌟</p>
+    <button onclick="abrirMenu()">Entrar</button>
+  </div>
+
+  <!-- Tela do menu -->
+  <div id="telaMenu" class="tela">
+    <h1>Menu Principal</h1>
+    <p>Escolha uma opção:</p>
+    <button onclick="abrirAnotacoes()">📝 Anotações</button>
+    <button onclick="abrirPlaylist()">🎵 Playlist</button>
+    <button onclick="abrirConfiguracoes()">⚙️ Configurações</button>
+    <button onclick="ajuda()">❓ Ajuda</button>
+    <br><br>
+    <button onclick="voltarInicio()">⬅️ Voltar</button>
+  </div>
+
+  <!-- Tela de anotações -->
+  <div id="telaAnotacoes" class="tela">
+    <h1>📝 Suas Anotações</h1>
+    <p>Digite um recado e salve para ver depois:</p>
+    <textarea id="textoAnotacao" placeholder="Escreva algo aqui..."></textarea><br>
+    <button onclick="salvarAnotacao()">Salvar</button>
+    <button onclick="verAnotacao()">Ver Anotação</button>
+    <button onclick="limparAnotacao()">🗑️ Limpar Tudo</button>
+    <button onclick="voltarMenu()">⬅️ Voltar ao Menu</button>
+
+    <div id="saida"></div>
+  </div>
+
+  <!-- Tela da playlist -->
+  <div id="telaPlaylist" class="tela">
+    <h1>🎧 Playlist do Alok</h1>
+    <p>Escolha sua música:</p>
+    <select id="musicaSelect" onchange="trocarMusica()">
+      <option value="none">Selecione uma música</option>
+      <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">Alok - Hear Me Now</option>
+      <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3">Alok - Ocean</option>
+      <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3">Alok - Table For 2</option>
+      <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3">Alok - Big Jet Plane (Remix)</option>
+
+    </select>
+    <br>
+    <audio id="player" controls></audio>
+    <br>
+    <button onclick="voltarMenu()">⬅️ Voltar ao Menu</button>
+  </div>
+
+  <!-- Tela de configurações -->
+  <div id="telaConfiguracoes" class="tela">
+    <h1>⚙️ Configurações</h1>
+    <p>Escolha a cor do tema:</p>
+    <input type="color" id="corPrincipal" onchange="mudarCorFundo()" value="#cfed58">
+    <br><br>
+    <button onclick="voltarMenu()">⬅️ Voltar ao Menu</button>
+  </div>
+
+  <footer>Feito com 💙 por Maria Clara</footer>
+
+  <script>
+    // Troca de telas
+    function mostrarTela(idTela) {
+      document.querySelectorAll(".tela").forEach(t => t.classList.remove("ativa"));
+      document.getElementById(idTela).classList.add("ativa");
+    }
+
+    function abrirMenu() { mostrarTela("telaMenu"); }
+    function voltarInicio() { mostrarTela("telaInicial"); }
+    function abrirAnotacoes() { mostrarTela("telaAnotacoes"); carregarAnotacao(); }
+    function voltarMenu() { mostrarTela("telaMenu"); }
+    function abrirPlaylist() { mostrarTela("telaPlaylist"); }
+    function abrirConfiguracoes() { mostrarTela("telaConfiguracoes"); }
+
+    // Funções principais
+    function salvarAnotacao() {
+      let texto = document.getElementById("textoAnotacao").value.trim();
+      if (texto === "") {
+        alert("Digite algo antes de salvar!");
+        return;
+      }
+      localStorage.setItem("minhaAnotacao", texto);
+      alert("Anotação salva com sucesso!");
+      document.getElementById("textoAnotacao").value = "";
+      verAnotacao();
+    }
+
+    function verAnotacao() {
+      const anotacao = localStorage.getItem("minhaAnotacao");
+      const saida = document.getElementById("saida");
+      saida.innerText = anotacao ? "📌 Sua anotação: " + anotacao : "Nenhuma anotação salva ainda.";
+    }
+
+    function carregarAnotacao() {
+      const anotacao = localStorage.getItem("minhaAnotacao");
+      const saida = document.getElementById("saida");
+      saida.innerText = anotacao ? "📌 Sua anotação: " + anotacao : "Nenhuma anotação salva ainda.";
+    }
+
+    function limparAnotacao() {
+      localStorage.removeItem("minhaAnotacao");
+      document.getElementById("saida").innerText = "Anotações apagadas!";
+      alert("Todas as anotações foram apagadas!");
+    }
+
+    // Playlist
+    function trocarMusica() {
+      const player = document.getElementById("player");
+      const musica = document.getElementById("musicaSelect").value;
+      if (musica === "none") {
+        player.pause();
+        player.src = "";
+      } else {
+        player.src = musica;
+        player.play();
+      }
+    }
+
+    // Alteração de cor de fundo
+    function mudarCorFundo() {
+      const cor = document.getElementById("corPrincipal").value;
+      document.body.style.background = `linear-gradient(135deg, ${cor}, #ff3fef)`;
+      localStorage.setItem("corTema", cor);
+    }
+
+    // Mantém cor escolhida
+    window.onload = function() {
+      const corSalva = localStorage.getItem("corTema");
+      if (corSalva) {
+        document.getElementById("corPrincipal").value = corSalva;
+        document.body.style.background = `linear-gradient(135deg, ${corSalva}, #ff3fef)`;
+      }
+    }
+
+    function ajuda() {
+      alert("Aqui haverá dicas e tutoriais sobre o app!");
+    }
+  </script>
+
+</body>
+</html>
